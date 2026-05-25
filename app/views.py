@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import MembershipPlan
+from .serializers import MembershipPlanSerializer
 
-# Create your views here.
+
+class MembershipPlanViewSet(ModelViewSet):
+
+    queryset = MembershipPlan.objects.all()
+
+    serializer_class = MembershipPlanSerializer
