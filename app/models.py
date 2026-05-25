@@ -5,9 +5,9 @@ from django.db import models
 class MembershipPlan(models.Model):
 
     PLAN_TYPES = (
-        ("monthly", "Monthly"),
-        ("quarterly", "Quarterly"),
-        ("yearly", "Yearly"),
+        ('BASIC', 'Basic'),
+        ('PREMIUM', 'Premium'),
+        ('VIP', 'VIP'),
     )
 
     name = models.CharField(max_length=50)
