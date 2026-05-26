@@ -24,7 +24,7 @@ class User(AbstractUser):
 
     ROLE_CHOICES = (
         ('USER', 'User'),
-        ('GYM_OWNER', 'Gym Owner'),
+        ('GYM_TRAINER', 'Gym Trainer'),
         ('ADMIN', 'Admin'),
     )
 
