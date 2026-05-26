@@ -10,5 +10,6 @@ router.register('plans', views.MembershipPlanViewSet, basename='plans')
 urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='login'),
     path('login/refresh', TokenRefreshView.as_view(), name='login_refresh'),
+    path('register/', views.RegisterAPIView.as_view(), name='register'),
     path('', include(router.urls)),
 ]

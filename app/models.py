@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
@@ -17,3 +18,18 @@ class MembershipPlan(models.Model):
     plan_type = models.CharField(max_length=20, choices=PLAN_TYPES)
 
     is_active = models.BooleanField(default=True)
+
+
+class User(AbstractUser):
+
+    ROLE_CHOICES = (
+        ('USER', 'User'),
+        ('GYM_OWNER', 'Gym Owner'),
+        ('ADMIN', 'Admin'),
+    )
+
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default='USER'
+    )
