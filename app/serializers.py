@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, MembershipPlan
+from .models import User, MembershipPlan, Payment
 
 class MembershipPlanSerializer(serializers.ModelSerializer):
 
@@ -46,3 +46,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
+
+class PaymentSerilizer(serializers.ModelSerializer):
+
+    class Meta:
+
+        model = Payment
+        fields = "__all__"
+        read_only_fields = ["status", "payment_date"]
