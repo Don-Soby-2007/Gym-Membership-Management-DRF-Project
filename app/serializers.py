@@ -44,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerilizer(serializers.ModelSerializer):
+    plan = serializers.PrimaryKeyRelatedField(queryset=MembershipPlan.objects.all(), required=True)
 
     class Meta:
 
