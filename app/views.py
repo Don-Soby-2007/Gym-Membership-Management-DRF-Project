@@ -1,13 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import MembershipPlan, User
+from .models import MembershipPlan, User, Payment
 from .serializers import MembershipPlanSerializer, UserSerializer, PaymentSerilizer
-from .permissions import IsAdmin
+from .permissions import IsAdmin, IsSelfOrAdmin, IsTrainerOrAdmin
 from .services import PaymentService
-from django.shortcuts import get_object_or_404
 
 
 class RegisterAPIView(APIView):
@@ -30,14 +29,11 @@ class RegisterAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
     
-class UserListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+class UserListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsTrainerOrAdmin]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
 
-    def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response({"users": serializer.data})
-    
 class PaymentAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -65,3 +61,31 @@ class PaymentAPIView(APIView):
                 "membership_end_date": membership.end_date,
             }, status=status.HTTP_201_CREATED
         )
+
+class PaymentHistoryAPIView(APIView):
+
+    permission_classes = [IsAuthenticated, IsSelfOrAdmin]
+
+    def get(self, request, user_id=None):
+
+        if request.user.role == 'ADMIN':
+            if user_id:
+                payments = Payment.objects.filter(user_id=user_id)
+            else:
+                payments = Payment.objects.all()
+
+        else:
+            if user_id and int(user_id) != request.user.id:
+                return Response({
+                    "detail": "You do not have permission to view this user's history"
+                }, status=status.HTTP_403_FORBIDDEN)
+            
+            payments = Payment.objects.filter(user=request.user)
+
+        serializer = PaymentSerilizer(payments, many=True)
+        return Response({"payments": serializer.data})
+    
+class MembershipPlanViewSet(ModelViewSet):
+    queryset = MembershipPlan.objects.all()
+    serializer_class = MembershipPlanSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
