@@ -1,5 +1,6 @@
 from django.db import transaction
-from .models import Membership, Payment
+from .models import Membership, Payment, MembershipPlan
+from rest_framework.exceptions import ValidationError
 
 from datetime import date, timedelta
 
@@ -7,10 +8,19 @@ class PaymentService:
 
     @staticmethod
     @transaction.atomic
-    def process_payment(user, amount, plan):
+    def process_payment(user, amount, plan_id):
+
+        try:
+            plan = MembershipPlan.get(id=plan_id, is_acitve=True)
+        except Membership.DoesNotExist:
+            raise ValidationError({"plan": "Invalid or incative plan"})
+        
+        if amount != plan.price:
+            raise ValidationError({"amount": "Amount does not match the plan"})
 
         payment = Payment.objects.create(
             user=user,
+            plan=plan,
             amount=amount,
             status="SUCCESS"
         )
