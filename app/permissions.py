@@ -1,12 +1,27 @@
 from rest_framework.permissions import BasePermission
 
 
-class IsTrainer(BasePermission):
+class IsAdmin(BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.role == 'GYM_TRAINER'
+        return request.user.is_authenticated and request.user.role == 'ADMIN'
     
-class IsOwner(BasePermission):
+class IsTrainerOrAdmin(BasePermission):
 
     def has_permission(self, request, view):
-        return request.user.role == 'ADMIN'
+        return request.user.is_authenticated and request.user.role in ['GYM_TRAINER', 'ADMIN']
+    
+class IsSelfOrAdmin(BasePermission):
+    
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+    
+    def has_object_permission(self, request, view, obj):
+        
+        if request.user.role == 'ADMIN':
+            return True
+        
+        if hasattr(obj, 'user'):
+            return obj.user == request.user
+        
+        return False
