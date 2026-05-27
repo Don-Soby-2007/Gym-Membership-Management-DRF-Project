@@ -16,7 +16,7 @@ urlpatterns = [
     path('users/', views.UserListView.as_view(), name='users'),
 
     path('payment/', views.PaymentAPIView.as_view(), name='payment'),
-    path('payment/history', views.PaymentHistoryAPIView.as_view(), name='payment-history'),
+    path('payment/history/', views.PaymentHistoryAPIView.as_view(), name='payment-history'),
     path('payment/history/<int:user_id>/', views.PaymentHistoryAPIView.as_view(), name='payment-history-user'),
 
     path('', include(router.urls)),

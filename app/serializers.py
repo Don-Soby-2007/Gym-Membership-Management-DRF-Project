@@ -50,7 +50,7 @@ class PaymentSerilizer(serializers.ModelSerializer):
 
         model = Payment
         fields = ["id", "user", "plan", "amount", "status", "payment_date"]
-        read_only_fields = ["user", "status", "payment_date"]
+        read_only_fields = ["id", "user", "status", "payment_date"]
 
         def validate_amount(self, value):
             if value <= 0:

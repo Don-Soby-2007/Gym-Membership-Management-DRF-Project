@@ -11,7 +11,7 @@ class PaymentService:
     def process_payment(user, amount, plan_id):
 
         try:
-            plan = MembershipPlan.get(id=plan_id, is_acitve=True)
+            plan = MembershipPlan.objects.get(id=plan_id, is_active=True)
         except Membership.DoesNotExist:
             raise ValidationError({"plan": "Invalid or incative plan"})
         

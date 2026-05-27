@@ -32,11 +32,19 @@ class RegisterAPIView(APIView):
 class UserListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsTrainerOrAdmin]
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    queryset = User.objects.filter(role='USER')
 
 class PaymentAPIView(APIView):
 
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        plans = MembershipPlan.objects.filter(is_active=True)
+
+        serializer = MembershipPlanSerializer(plans, many=True)
+
+        return Response({"plans": serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
 
