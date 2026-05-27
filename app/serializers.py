@@ -11,19 +11,9 @@ class MembershipPlanSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError('The price should be greater than Zero')
         return value
-    
-    def validate(self, attrs):
-
-        duration = attrs['duration']
-        plan_type = attrs['plan_type']
-
-        if plan_type == 'VIP':
-            if duration != 30:
-                raise serializers.ValidationError('VIP plan only have duration of 30 days')
-        return super().validate(attrs)
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(
         write_only=True
@@ -32,9 +22,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = User
-        fields = ['username', 'email', 'password', 'role']
+        fields = ['id', 'username', 'email', 'password', 'role']
 
-        read_only_fields = ['role']
+        read_only_fields = ['id', 'role']
 
     def create(self, validated_data):
         
@@ -47,11 +37,22 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
     
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('password', None)
+        return data
+
 
 class PaymentSerilizer(serializers.ModelSerializer):
 
     class Meta:
 
         model = Payment
-        fields = "__all__"
-        read_only_fields = ["status", "payment_date"]
+        fields = ["id", "user", "plan", "amount", "status", "payment_date"]
+        read_only_fields = ["user", "status", "payment_date"]
+
+        def validate_amount(self, value):
+            if value <= 0:
+                raise serializers.ValidationError("Amount must be positive.")
+            return value
+        
