@@ -102,7 +102,15 @@ class PaymentHistoryAPIView(APIView):
 class MembershipPlanViewSet(ModelViewSet):
     queryset = MembershipPlan.objects.all()
     serializer_class = MembershipPlanSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    
+    def get_permissions(self):
+        
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated, IsAdmin]
+        
+        return [permission() for permission in permission_classes]
 
 class LogoutAPIView(APIView):
 
