@@ -8,6 +8,7 @@ from .serializers import MembershipPlanSerializer, UserSerializer, PaymentSerili
 from .permissions import IsAdmin, IsSelfOrAdmin, IsTrainerOrAdmin
 from .services import PaymentService
 from .pagination import PaginationClass
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class RegisterAPIView(APIView):
@@ -102,3 +103,18 @@ class MembershipPlanViewSet(ModelViewSet):
     queryset = MembershipPlan.objects.all()
     serializer_class = MembershipPlanSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
+
+class LogoutAPIView(APIView):
+
+    def post(self, request):
+
+        refresh = request.data.get('refresh')
+
+        token = RefreshToken(refresh)
+
+        token.blacklist()
+
+        return Response(
+            {'message': "Logged out successfully"},
+            status=status.HTTP_200_OK
+        )
