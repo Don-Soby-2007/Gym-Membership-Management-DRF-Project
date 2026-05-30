@@ -7,6 +7,7 @@ from .models import MembershipPlan, User, Payment
 from .serializers import MembershipPlanSerializer, UserSerializer, PaymentSerilizer
 from .permissions import IsAdmin, IsSelfOrAdmin, IsTrainerOrAdmin
 from .services import PaymentService
+from .pagination import PaginationClass
 
 
 class RegisterAPIView(APIView):
@@ -42,10 +43,14 @@ class PaymentAPIView(APIView):
 
         plans = MembershipPlan.objects.filter(is_active=True)
 
-        serializer = MembershipPlanSerializer(plans, many=True)
+        paginator = PaginationClass()
 
-        return Response({"plans": serializer.data}, status=status.HTTP_200_OK)
+        page = paginator.paginate_queryset(plans, request)
 
+        serializer = MembershipPlanSerializer(page, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+    
     def post(self, request):
 
         serializer = PaymentSerilizer(data=request.data)
